@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Restaurant } from './schemas/restaurant.schema';
+import { Restaurant, RestaurantDocument } from './schemas/restaurant.schema';
 
 @Injectable()
 export class RestaurantService {
@@ -11,24 +16,54 @@ export class RestaurantService {
     @InjectModel('Restaurant') private restaurantModel: Model<Restaurant>,
   ) { }
 
-  create(createRestaurantDto: CreateRestaurantDto) {
-    const createdRestaurant = new this.restaurantModel(createRestaurantDto);
-    return createdRestaurant.save();
+  async create(
+    createRestaurantDto: CreateRestaurantDto,
+  ): Promise<RestaurantDocument> {
+    try {
+      const createdRestaurant = new this.restaurantModel(createRestaurantDto);
+      return await createdRestaurant.save();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all restaurant`;
+  async findAll(): Promise<RestaurantDocument[]> {
+    const restaurants = await this.restaurantModel.find().limit(10).exec();
+    if (!restaurants) throw new NotFoundException('No restaurants found');
+    return restaurants;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} restaurant`;
+  async findOne(id: string): Promise<RestaurantDocument> {
+    const restaurant = await this.restaurantModel.findById(id).exec();
+    if (!restaurant) throw new NotFoundException('No restaurant found');
+    return restaurant;
   }
 
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    return `This action updates a #${id} restaurant`;
+  async update(
+    id: string,
+    updateRestaurantDto: UpdateRestaurantDto,
+  ): Promise<RestaurantDocument> {
+    try {
+      const restaurant = await this.findOne(id);
+      if (!restaurant) throw new NotFoundException('No restaurant found');
+      restaurant.set(updateRestaurantDto);
+      return await restaurant.save();
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+      throw new BadRequestException(err.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
+  async remove(id: string): Promise<void> {
+    try {
+      const restaurant = await this.findOne(id);
+      if (!restaurant) {
+        throw new NotFoundException(`Restaurant with ID ${id} not found`);
+      }
+      await restaurant.deleteOne();
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
+      throw new BadRequestException(err.message);
+    }
   }
 }
