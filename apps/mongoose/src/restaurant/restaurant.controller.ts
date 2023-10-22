@@ -17,31 +17,31 @@ export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) { }
 
   @Post()
-  create(@Body() createRestaurantDto: CreateRestaurantDto) {
-    return this.restaurantService.create(createRestaurantDto);
+  async create(@Body() createRestaurantDto: CreateRestaurantDto) {
+    return await this.restaurantService.create(createRestaurantDto);
   }
 
   @Get()
-  findAll() {
-    return this.restaurantService.findAll();
+  async findAll() {
+    return await this.restaurantService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.restaurantService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.restaurantService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateRestaurantDto: UpdateRestaurantDto,
   ) {
-    return this.restaurantService.update(id, updateRestaurantDto);
+    return await this.restaurantService.update(id, updateRestaurantDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    return this.restaurantService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.restaurantService.remove(id);
   }
 }
