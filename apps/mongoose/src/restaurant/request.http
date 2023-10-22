@@ -1,0 +1,54 @@
+### Restaurant List
+GET http://localhost:3000/restaurant HTTP/1.1
+
+### Restaurant Create
+POST http://localhost:3000/restaurant HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Restaurant 1",
+    "restaurant_id": "123123",
+    "address": {
+        "building": "Building 1",
+        "street": "Street 1",
+        "zipcode": "Zipcode 1",
+        "coord": [
+            1,
+            1
+        ]
+    },
+    "borough": "Borough 1",
+    "cuisine": "Cuisine 1",
+    "grades": [
+        {
+            "date": "2020-05-07T00:00:00.000Z",
+            "grade": "A",
+            "score": 10
+        }
+    ]
+}
+
+### Restaurant Detail
+GET http://localhost:3000/restaurant/5eb3d668b31de5d588f4292b HTTP/1.1
+
+
+### Restaurant Update
+PATCH  http://localhost:3000/restaurant/5eb3d668b31de5d588f4292c HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Restaurant 2",
+    "restaurant_id": "5",
+    "address": {
+        "building": "Building 1",
+        "street": "Street 1",
+        "zipcode": "Zipcode 1",
+        "coord": [
+            1,
+            1
+        ]
+    }
+}
+
+### Restaurant delete
+DELETE http://localhost:3000/restaurant/5eb3d668b31de5d588f4292c HTTP/1.1
